@@ -483,6 +483,78 @@
     d.querySelectorAll('.sy').forEach(function(s){ s.textContent = june.getFullYear(); });
   })();
 
+
+  /* ------------------------------------------------------------------
+     PORTFOLIO: filter chips and the project viewer
+     ------------------------------------------------------------------ */
+  var chips = [].slice.call(d.querySelectorAll('.chip')), pcards = [].slice.call(d.querySelectorAll('.pcard'));
+  chips.forEach(function(c){
+    c.addEventListener('click', function(){
+      var f = c.getAttribute('data-f');
+      chips.forEach(function(x){ var on = x === c; x.classList.toggle('on', on); x.setAttribute('aria-pressed', on ? 'true' : 'false'); });
+      pcards.forEach(function(p){
+        var show = f === 'all' || p.getAttribute('data-tag') === f;
+        p.classList.toggle('out', !show);
+        if(show){ p.classList.add('in'); }
+      });
+    });
+  });
+  var lb = d.getElementById('lb');
+  if(lb){
+    var PJ = [].slice.call(d.querySelectorAll('script.pj')).map(function(s){ return JSON.parse(s.textContent); });
+    var lbImg = lb.querySelector('.lb-pic img'), lbCur = 0, lbLast = null;
+    var lbSet = function(i){
+      lbCur = (i + PJ.length) % PJ.length; var p = PJ[lbCur];
+      lbImg.style.opacity = '0';
+      var im = new Image(); im.onload = function(){ lbImg.src = im.src; lbImg.alt = p.alt; lbImg.style.opacity = '1'; }; im.src = 'media/wk-' + p.key + '.jpg';
+      lb.querySelector('#lb-t').textContent = p.t;
+      lb.querySelector('.lb-place').textContent = p.place;
+      lb.querySelector('.lb-line').textContent = p.line;
+      lb.querySelector('[data-k="type"]').textContent = p.type;
+      lb.querySelector('[data-k="size"]').textContent = p.size;
+      lb.querySelector('[data-k="wk"]').textContent = p.wk + ' שבועות';
+      lb.querySelector('[data-k="fin"]').textContent = p.fin;
+      lb.querySelector('.lb-n').textContent = ('0' + (lbCur + 2)) + ' / 07';
+      lb.querySelector('.lb-go').href = 'contact.html?type=' + encodeURIComponent('בריכה חדשה') + '&calc=' + encodeURIComponent('בהשראת הפרויקט: ' + p.t + ' (' + p.type + ', ' + p.size + ')');
+      try{ history.replaceState(null, '', '#' + p.key); }catch(e){}
+    };
+    var lbOpen = function(i){
+      lbLast = d.activeElement; lbSet(i);
+      lb.hidden = false; de.classList.add('lb-open');
+      requestAnimationFrame(function(){ lb.classList.add('on'); });
+      lb.querySelector('.lb-x').focus();
+    };
+    var lbClose = function(){
+      lb.classList.remove('on'); de.classList.remove('lb-open');
+      setTimeout(function(){ lb.hidden = true; }, 420);
+      try{ history.replaceState(null, '', location.pathname); }catch(e){}
+      if(lbLast && lbLast.focus) lbLast.focus();
+    };
+    pcards.forEach(function(p){ if(p.hasAttribute('data-i')) p.addEventListener('click', function(){ lbOpen(parseInt(p.getAttribute('data-i'), 10)); }); });
+    lb.querySelector('.lb-x').addEventListener('click', lbClose);
+    lb.querySelector('.lb-prev').addEventListener('click', function(){ lbSet(lbCur - 1); });
+    lb.querySelector('.lb-next').addEventListener('click', function(){ lbSet(lbCur + 1); });
+    d.addEventListener('keydown', function(e){
+      if(lb.hidden) return;
+      if(e.key === 'Escape') lbClose();
+      if(e.key === 'ArrowLeft') lbSet(lbCur + 1);
+      if(e.key === 'ArrowRight') lbSet(lbCur - 1);
+      if(e.key === 'Tab'){
+        var f = [].slice.call(lb.querySelectorAll('button,a[href]')), a = f[0], z = f[f.length - 1];
+        if(e.shiftKey && d.activeElement === a){ z.focus(); e.preventDefault(); }
+        else if(!e.shiftKey && d.activeElement === z){ a.focus(); e.preventDefault(); }
+      }
+    });
+    var tx0 = null;
+    lb.querySelector('.lb-pic').addEventListener('touchstart', function(e){ tx0 = e.touches[0].clientX; }, {passive:true});
+    lb.querySelector('.lb-pic').addEventListener('touchend', function(e){
+      if(tx0 === null) return; var dx = e.changedTouches[0].clientX - tx0; tx0 = null;
+      if(Math.abs(dx) > 50) lbSet(lbCur + (dx > 0 ? 1 : -1));
+    });
+    var h = location.hash.slice(1);
+    if(h){ PJ.forEach(function(p, i){ if(p.key === h) setTimeout(function(){ lbOpen(i); }, 500); }); }
+  }
+
   /* ------------------------------------------------------------------
      filming: A starts and stops a steady auto-scroll, R jumps to the top,
      the arrows make the run shorter or longer

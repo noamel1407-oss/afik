@@ -50,18 +50,21 @@ ul,ol{padding:0;list-style:none}
 .disp{font-family:var(--display);font-weight:400;letter-spacing:-.005em}
 
 /* ---------- buttons ---------- */
-.btn{display:inline-flex;align-items:center;justify-content:center;gap:14px;min-height:56px;padding:0 28px;border:1px solid var(--ink);
+.btn{--fill:var(--water-ink);--fill-ink:var(--paper);position:relative;isolation:isolate;overflow:hidden;display:inline-flex;align-items:center;justify-content:center;gap:14px;min-height:56px;padding:0 28px;border:1px solid var(--ink);
   background:var(--ink);color:var(--paper);text-decoration:none;font-size:16px;font-weight:500;letter-spacing:.01em;cursor:pointer;
-  transition:background .35s var(--out),color .35s var(--out),border-color .35s var(--out)}
+  transition:color .45s var(--out),border-color .45s var(--out)}
+.btn:before{content:"";position:absolute;inset:-1px;z-index:-1;background:var(--fill);transform:scaleX(0);transform-origin:right;transition:transform .6s var(--out)}
+.btn:hover:before{transform:scaleX(1)}
+.btn:hover{color:var(--fill-ink)}
 .btn .ar{width:22px;height:12px;flex:none;transition:transform .45s var(--out)}
-.btn:hover{background:var(--water-ink);border-color:var(--water-ink)}
+.btn:hover{border-color:var(--fill)}
 .btn:hover .ar{transform:translateX(-6px)}
 .btn.ghost{background:transparent;color:var(--ink)}
-.btn.ghost:hover{background:var(--ink);color:var(--paper)}
+.btn.ghost{--fill:var(--ink)}
 .on-dark .btn,.btn.light{background:var(--on-night);color:var(--night);border-color:var(--on-night)}
-.on-dark .btn:hover,.btn.light:hover{background:var(--gold);border-color:var(--gold)}
+.on-dark .btn,.btn.light{--fill:var(--gold);--fill-ink:var(--night)}
 .on-dark .btn.ghost,.btn.light.ghost{background:transparent;color:var(--on-night);border-color:rgba(239,233,222,.5)}
-.on-dark .btn.ghost:hover,.btn.light.ghost:hover{background:var(--on-night);color:var(--night);border-color:var(--on-night)}
+.on-dark .btn.ghost,.btn.light.ghost{--fill:var(--on-night);--fill-ink:var(--night)}
 .tl{display:inline-flex;align-items:center;gap:10px;text-decoration:none;font-weight:500;font-size:15.5px;padding-bottom:6px;
   background:linear-gradient(currentColor,currentColor) right bottom/100% 1px no-repeat;transition:background-size .5s var(--out)}
 .tl:hover{background-size:0 1px}
@@ -154,7 +157,7 @@ html.menu-open #menu nav a:nth-child(2){transition-delay:.06s}html.menu-open #me
 /* ==========================================================================
    HOME — the build
    ========================================================================== */
-#build{position:relative;height:640vh;background:var(--night)}
+#build{position:relative;height:740vh;background:var(--stone)}
 #build .stage{position:sticky;top:0;height:100vh;height:100lvh;overflow:hidden}
 .frames{position:absolute;inset:0}
 .frames img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;object-position:50% 50%;opacity:0;will-change:opacity,transform}
@@ -203,7 +206,7 @@ html.ready .cue{opacity:1}
 .b-rail i{display:block;height:100%;background:var(--gold);transform:scaleX(0);transform-origin:right}
 
 @media(max-width:900px){
-  #build{height:560vh}
+  #build{height:650vh}
   .b-scrim{background:
     linear-gradient(to bottom,rgba(10,17,14,.78) 0%,rgba(10,17,14,.5) 22%,rgba(10,17,14,0) 40%),
     linear-gradient(to top,rgba(10,17,14,.8) 0%,rgba(10,17,14,.35) 16%,rgba(10,17,14,0) 30%)}
@@ -223,7 +226,7 @@ html.ready .cue{opacity:1}
 }
 
 /* ---------- home: studio statement ---------- */
-.studio{padding:clamp(100px,14vw,200px) 0 clamp(80px,10vw,140px)}
+.studio{padding:clamp(70px,9vw,130px) 0 clamp(80px,10vw,140px)}
 .studio-grid{display:grid;grid-template-columns:minmax(0,1.55fr) minmax(0,1fr);gap:clamp(36px,6vw,110px);align-items:end}
 .say{font-family:var(--display);font-size:clamp(34px,4.3vw,68px);line-height:1.12;margin-top:28px}
 .studio .side p{color:var(--ink2);font-weight:300;font-size:17px;line-height:1.85;max-width:44ch}
@@ -561,3 +564,81 @@ form.lead{margin-top:46px}
   .cue i{animation:none}
   html.veil-go #veil,html.veil-out #veil{transition:none}
 }
+
+/* ==========================================================================
+   v2 — landing card, vows, service peek, rotating reviews, summer count
+   ========================================================================== */
+/* grain: a faint paper/film texture over everything on larger screens */
+@media (min-width:901px){
+  body:after{content:"";position:fixed;inset:0;z-index:95;pointer-events:none;background:url(media/grain.png);opacity:.55}
+}
+
+/* two-tone headings: the second clause steps back */
+.split.two .ln:last-child > span{color:var(--ink3)}
+.on-dark .split.two .ln:last-child > span{color:rgba(239,233,222,.46)}
+
+/* the build lands into the page as a framed picture */
+.shot{position:absolute;inset:0;overflow:hidden;background:var(--night);--L:0;--it:11vh;--is:5vw;--ib:10vh;
+  clip-path:inset(calc(var(--L) * var(--it)) calc(var(--L) * var(--is)) calc(var(--L) * var(--ib)) calc(var(--L) * var(--is)) round calc(var(--L) * 4px))}
+.landcap{position:absolute;inset-inline:5vw;bottom:0;height:10vh;display:flex;align-items:center;justify-content:space-between;gap:20px;
+  font-size:14.5px;color:var(--ink2);opacity:0;transform:translateY(12px);pointer-events:none}
+.landcap.on{pointer-events:auto}
+.landcap b{font-family:var(--display);font-weight:400;font-size:24px;color:var(--ink);margin-inline-end:14px}
+.landcap .sep{opacity:.4;margin:0 8px}
+@media(max-width:900px){
+  .shot{--it:calc(var(--nav-h) + 1vh);--is:4vw;--ib:12vh}
+  .landcap{inset-inline:4vw;height:12vh;flex-direction:column;justify-content:center;align-items:flex-start;gap:4px;font-size:13.5px}
+  .landcap b{font-size:21px}
+}
+
+/* nav: open-for-bookings note */
+.nav-status{display:none;align-items:center;gap:9px;font-size:13.5px;opacity:.86;white-space:nowrap}
+.nav-status i{width:7px;height:7px;border-radius:50%;background:#3FBF7A;box-shadow:0 0 0 0 rgba(63,191,122,.6);animation:pulse 2.4s ease-out infinite}
+@keyframes pulse{0%{box-shadow:0 0 0 0 rgba(63,191,122,.55)}80%,100%{box-shadow:0 0 0 9px rgba(63,191,122,0)}}
+@media(min-width:1240px){.nav-status{display:inline-flex}}
+
+/* three written commitments */
+.vows{background:var(--night);color:var(--on-night);padding:clamp(90px,11vw,170px) 0}
+.vows h2{font-family:var(--display);font-weight:400;font-size:clamp(50px,7.4vw,124px);line-height:.98;margin-top:24px}
+.vows-grid{display:grid;grid-template-columns:repeat(3,1fr);margin-top:clamp(56px,7vw,110px)}
+.vow{position:relative;padding:34px clamp(20px,2.4vw,40px) 0;border-inline-start:1px solid var(--night-line)}
+.vow:first-child{border-inline-start:0;padding-inline-start:0}
+.vow:before{content:"";position:absolute;top:0;inset-inline:0;height:1px;background:var(--gold);transform:scaleX(0);transform-origin:right;transition:transform 1.4s var(--out) .2s}
+.vow:first-child:before{inset-inline-start:0}
+.vow.in:before{transform:scaleX(1)}
+.vow .big{font-family:var(--display);font-size:clamp(84px,9vw,156px);line-height:.86;color:var(--gold);direction:ltr;text-align:right}
+.vow h3{font-family:var(--display);font-weight:400;font-size:clamp(26px,2.3vw,36px);line-height:1.15;margin-top:22px}
+.vow p{margin-top:14px;color:var(--on-night2);font-weight:300;font-size:16px;line-height:1.8;max-width:34ch}
+@media(max-width:900px){
+  .vows-grid{grid-template-columns:1fr}
+  .vow{border-inline-start:0;padding:30px 0 40px;border-bottom:1px solid var(--night-line)}
+  .vow:last-child{border-bottom:0;padding-bottom:0}
+}
+
+/* services: a picture follows the cursor */
+.svc-peek{position:fixed;top:0;left:0;z-index:60;width:clamp(220px,19vw,300px);pointer-events:none;will-change:transform}
+.svc-peek .in2{position:relative;aspect-ratio:3 / 4;overflow:hidden;opacity:0;transform:scale(.82);transition:opacity .35s ease,transform .6s var(--out);box-shadow:0 30px 60px rgba(10,17,14,.28)}
+.svc-peek.on .in2{opacity:1;transform:none}
+.svc-peek img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;opacity:0;transform:scale(1.12);transition:opacity .45s ease,transform .9s var(--out)}
+.svc-peek img.on{opacity:1;transform:none}
+@media (hover:none),(pointer:coarse){.svc-peek{display:none}}
+
+/* rotating reviews on the full-bleed photo */
+.tqs{display:grid}
+.tq{grid-area:1 / 1;opacity:0;visibility:hidden;transform:translateY(22px);transition:opacity .7s ease,transform 1s var(--out),visibility 0s linear .7s}
+.tq.on{opacity:1;visibility:visible;transform:none;transition:opacity .9s ease .15s,transform 1.1s var(--out) .15s,visibility 0s}
+.tq blockquote{font-family:var(--display);font-size:clamp(32px,4.2vw,68px);line-height:1.1}
+.tq figcaption{margin-top:22px;font-size:15px;color:var(--on-night2);letter-spacing:.02em}
+.tctl{display:flex;align-items:center;gap:22px;margin-top:34px}
+.td{display:flex;gap:6px}
+.td button{border:0;background:none;color:var(--on-night2);font-size:13.5px;padding:6px 8px;cursor:pointer;font-family:var(--sans);direction:ltr}
+.td button[aria-current="true"]{color:var(--on-night)}
+.tbar{flex:1;max-width:220px;height:1px;background:rgba(239,233,222,.24)}
+.tbar i{display:block;height:100%;background:var(--gold);transform:scaleX(0);transform-origin:right}
+
+/* call: days left until the summer */
+.call-grid{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:30px;align-items:end}
+.days{text-align:left}
+.days b{display:block;font-family:var(--display);font-weight:400;font-size:clamp(110px,15vw,250px);line-height:.8;color:var(--gold);direction:ltr}
+.days span{display:block;margin-top:14px;font-size:15px;color:var(--on-night2);text-align:left}
+@media(max-width:900px){.call-grid{grid-template-columns:1fr}.days,.days span{text-align:right}.days b{text-align:right}}

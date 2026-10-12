@@ -28,7 +28,7 @@
 <link rel="preload" href="fonts/ibm-plex-sans-hebrew-hebrew-300-normal.woff2" as="font" type="font/woff2" crossorigin>
 <link rel="preload" href="fonts/ibm-plex-sans-hebrew-hebrew-400-normal.woff2" as="font" type="font/woff2" crossorigin>
 <script>(function(){var d=document.documentElement;d.classList.add('js');try{if(sessionStorage.getItem('afik-go')){d.classList.add('veil-in');sessionStorage.removeItem('afik-go')}}catch(e){}try{if(!sessionStorage.getItem('afik-pre'))document.documentElement.classList.add('pre')}catch(e){}})();</script>
-<link rel="stylesheet" href="site.css?v=1">
+<link rel="stylesheet" href="site.css?v=2">
 <link rel="preload" as="image" href="media/stage-0.jpg" imagesrcset="media/stage-0-s.jpg 1440w, media/stage-0.jpg 1920w" imagesizes="100vw" fetchpriority="high">
 </head>
 <body>
@@ -42,6 +42,7 @@
 <header id="nav" data-on="light">
   <a class="logo" href="index.html" aria-label="אפיק — לדף הבית"><svg viewBox="0 0 34 22" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" aria-hidden="true"><rect x="1" y="1" width="32" height="20" rx="1.5"/><path d="M7 12.5q2.5-3 5 0t5 0 5 0 5 0"/></svg><span>אפיק</span></a>
   <div class="nav-r">
+    <span class="nav-status"><i aria-hidden="true"></i>מקבלים פרויקטים לקיץ <span class="sy">2027</span></span>
     <nav class="nav-links" aria-label="ראשי"><a href="projects.html">פרויקטים</a><a href="process.html">תהליך ומחיר</a><a href="contact.html">צור קשר</a></nav>
     <a class="nav-cta" href="contact.html">פגישת תכנון</a>
     <button class="burger" type="button" aria-label="תפריט" aria-expanded="false" aria-controls="menu"><i></i><i></i></button>
@@ -55,6 +56,7 @@
 <main id="main">
 <section id="build" data-nav="dark" aria-label="החצר נבנית בגלילה">
   <div class="stage">
+   <div class="shot">
     <div class="frames">
       <img src="media/stage-0.jpg" srcset="media/stage-0-s.jpg 1440w, media/stage-0.jpg 1920w" sizes="100vw" alt="מדשאה פתוחה מול בית עם חזית זכוכית, לפני תחילת העבודה" fetchpriority="high">
       <img src="media/stage-1.jpg" srcset="media/stage-1-s.jpg 1440w, media/stage-1.jpg 1920w" sizes="100vw" alt="קווי הבריכה מסומנים והחפירה מתחילה" decoding="async">
@@ -88,6 +90,8 @@
       </div>
     </div>
     <div class="b-rail"><i></i></div>
+   </div>
+   <div class="landcap"><div><b>בית בכפר שמריהו</b><span>4×10 מ׳</span><span class="sep">·</span><span>10 שבועות בשטח</span><span class="sep">·</span><span>2026</span></div><a class="tl" href="projects.html">לפרויקט המלא <svg class="ar" viewBox="0 0 22 12" fill="none" stroke="currentColor" stroke-width="1.4" aria-hidden="true"><path d="M21 6H1M6 1 1 6l5 5"/></svg></a></div>
   </div>
 </section>
 
@@ -112,10 +116,22 @@
   </div>
 </section>
 
+<section class="vows on-dark" data-nav="dark">
+  <div class="wrap">
+    <div class="lbl light" data-rv>שלוש התחייבויות, בכתב</div>
+    <h2 class="split two"><span class="ln"><span>לא מבטיחים.</span></span><span class="ln"><span>חותמים.</span></span></h2>
+    <div class="vows-grid">
+      <div class="vow" data-rv><div class="big">5,000</div><h3>שקלים על כל שבוע איחור</h3><p>תאריך המסירה כתוב בחוזה. אם איחרנו באשמתנו, אנחנו משלמים לכם, על כל שבוע.</p></div>
+      <div class="vow" data-rv="2"><div class="big">0</div><h3>תוספות באמצע העבודה</h3><p>המחיר שחתמתם עליו הוא המחיר שתשלמו. מה שלא נכנס להצעה, לא נכנס לחשבון.</p></div>
+      <div class="vow" data-rv="3"><div class="big">25</div><h3>שנות אחריות על השלד</h3><p>ועוד שלוש שנים על המערכות ועל הגמר, עם מספר וואטסאפ שעונה גם אחרי המסירה.</p></div>
+    </div>
+  </div>
+</section>
+
 <section class="svc">
   <div class="wrap">
     <div class="sec-head">
-      <div><div class="lbl" data-rv>מה אנחנו בונים</div><h2 class="split"><span class="ln"><span>מהמים</span></span><span class="ln"><span>ועד הגדר.</span></span></h2></div>
+      <div><div class="lbl" data-rv>מה אנחנו בונים</div><h2 class="split two"><span class="ln"><span>מהמים</span></span><span class="ln"><span>ועד הגדר.</span></span></h2></div>
       <p data-rv>שש עבודות, צוות אחד. אפשר להתחיל בבריכה ולהמשיך לחצר כולה, או להפך. לחיצה על שורה פותחת פנייה מוכנה.</p>
     </div>
     <div class="rows">
@@ -127,14 +143,19 @@
       <a class="row" href="contact.html?type=שירות ותחזוקה" data-rv><span class="i">06</span><h3>שירות ותחזוקה</h3><p>ביקור שבועי, איזון מים ותחזוקת מערכות. השנה הראשונה עלינו.</p><span class="go" aria-hidden="true"><svg viewBox="0 0 20 11" fill="none" stroke="currentColor" stroke-width="1.4"><path d="M19 5.5H1M5.5 1 1 5.5 5.5 10"/></svg></span></a>
     </div>
   </div>
+  <div class="svc-peek" aria-hidden="true"><div class="in2"><img src="media/pk-new.jpg" alt="" loading="lazy" decoding="async"><img src="media/pk-reno.jpg" alt="" loading="lazy" decoding="async"><img src="media/pk-spa.jpg" alt="" loading="lazy" decoding="async"><img src="media/pk-land.jpg" alt="" loading="lazy" decoding="async"><img src="media/pk-light.jpg" alt="" loading="lazy" decoding="async"><img src="media/pk-care.jpg" alt="" loading="lazy" decoding="async"></div></div>
 </section>
 
 <section class="bleed on-dark" data-nav="dark">
   <img data-parallax src="media/gather.jpg" srcset="media/gather-s.jpg 1000w, media/gather.jpg 1600w" sizes="100vw" alt="חברים יושבים על ספות חוץ ליד הבריכה בשעת שקיעה" loading="lazy" decoding="async">
   <div class="rate" data-rv><b>4.9</b>דירוג ממוצע מתוך 412 ביקורות</div>
-  <div class="q">
-    <blockquote data-rv>קיבלנו תאריך סיום ביום הראשון, וסיימו בדיוק בו. אחרי שלושה קבלנים אחרים זה הרגיש כמעט מוזר.</blockquote>
-    <cite data-rv="2">משפחת אלמוג · רמת השרון</cite>
+  <div class="q tst" data-rv>
+    <div class="tqs" aria-live="polite">
+      <figure class="tq on"><blockquote>קיבלנו תאריך סיום ביום הראשון, וסיימו בדיוק בו. אחרי שלושה קבלנים אחרים זה הרגיש כמעט מוזר.</blockquote><figcaption>משפחת אלמוג · רמת השרון</figcaption></figure>
+      <figure class="tq"><blockquote>הילדים לא יוצאים מהמים מאפריל. ואנחנו יושבים ליד הבריכה כל ערב, כאילו יצאנו לחופשה בלי לזוז מהבית.</blockquote><figcaption>משפחת שגב · כפר סבא</figcaption></figure>
+      <figure class="tq"><blockquote>ההדמיה הייתה זהה למה שקיבלנו בסוף. אפילו גוון המים.</blockquote><figcaption>ד״ר ע׳ לוינסון · הרצליה פיתוח</figcaption></figure>
+    </div>
+    <div class="tctl"><div class="td"><button type="button" aria-label="המלצה ראשונה" aria-current="true">01</button><button type="button" aria-label="המלצה שנייה" aria-current="false">02</button><button type="button" aria-label="המלצה שלישית" aria-current="false">03</button></div><div class="tbar"><i></i></div></div>
   </div>
 </section>
 
@@ -157,14 +178,16 @@
 <section class="call on-dark" data-nav="dark">
   <div class="wrap">
     <div class="lbl light" data-rv>פגישת תכנון ללא עלות</div>
-    <h2 class="split"><span class="ln"><span>בואו נתחיל</span></span><span class="ln"><span>בקו הראשון בדשא.</span></span></h2>
+    <div class="call-grid">
+      <h2 class="split"><span class="ln"><span>הקיץ הבא</span></span><span class="ln"><span>מתחיל עכשיו.</span></span></h2>
+      <div class="days" data-rv="2"><b id="days">232</b><span>ימים עד הקיץ</span></div>
+    </div>
     <div class="row2">
-      <p data-rv>ביקור בשטח, בדיקת קרקע ומדידות. תוך עשרה ימי עבודה תקבלו הדמיה של החצר שלכם ומחיר סגור, בלי שום התחייבות.</p>
+      <p data-rv>תכנון והיתר לוקחים כמה חודשים, והבנייה עוד עשרה שבועות. מי שמתחיל לתכנן החודש, יכול לשחות בבריכה שלו ביוני.</p>
       <div class="acts" data-rv="2"><a class="btn" href="contact.html">לתיאום פגישה <svg class="ar" viewBox="0 0 22 12" fill="none" stroke="currentColor" stroke-width="1.4" aria-hidden="true"><path d="M21 6H1M6 1 1 6l5 5"/></svg></a><a class="btn ghost" href="https://wa.me/972544500539" target="_blank" rel="noopener">כתבו לנו בוואטסאפ</a></div>
     </div>
   </div>
 </section>
-
 </main>
 <footer class="site on-dark" data-nav="dark">
   <div class="wrap">
@@ -185,6 +208,6 @@
   </div>
 </footer>
 <a class="wa-fab off" href="https://wa.me/972544500539" target="_blank" rel="noopener" aria-label="כתבו לנו בוואטסאפ"><svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M.057 24l1.687-6.163a11.867 11.867 0 0 1-1.587-5.946C.16 5.335 5.495 0 12.05 0a11.817 11.817 0 0 1 8.413 3.488 11.824 11.824 0 0 1 3.48 8.414c-.003 6.557-5.338 11.892-11.893 11.892a11.9 11.9 0 0 1-5.688-1.448L.057 24zm6.597-3.807c1.676.995 3.276 1.591 5.392 1.592 5.448 0 9.886-4.434 9.889-9.885.002-5.462-4.415-9.89-9.881-9.892-5.452 0-9.887 4.434-9.889 9.884-.001 2.225.651 3.891 1.746 5.634l-.999 3.648 3.742-.981zm11.387-5.464c-.074-.124-.272-.198-.57-.347-.297-.149-1.758-.868-2.031-.967-.272-.099-.47-.149-.669.149-.198.297-.768.967-.941 1.165-.173.198-.347.223-.644.074-.297-.149-1.255-.462-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.297-.347.446-.521.151-.172.2-.296.3-.495.099-.198.05-.372-.025-.521-.075-.148-.669-1.611-.916-2.206-.242-.579-.487-.501-.669-.51l-.57-.01c-.198 0-.52.074-.792.372s-1.04 1.016-1.04 2.479 1.065 2.876 1.213 3.074c.149.198 2.095 3.2 5.076 4.487.709.306 1.263.489 1.694.626.712.226 1.36.194 1.872.118.571-.085 1.758-.719 2.006-1.413.248-.695.248-1.29.173-1.414z"/></svg><span class="tip">כתבו לנו בוואטסאפ</span></a>
-<script src="site.js?v=1"></script>
+<script src="site.js?v=2"></script>
 </body>
 </html>

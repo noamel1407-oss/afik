@@ -86,6 +86,7 @@
     if(!nav) return;
     var y = (nav.offsetHeight || 70) / 2, x = w.innerWidth - 40, dark = false;
     for(var i = 0; i < darks.length; i++){
+      if(darks[i].getAttribute('data-nav') !== 'dark') continue;
       var r = darks[i].getBoundingClientRect();
       if(r.top <= y && r.bottom >= y && r.left <= x && r.right >= x){ dark = true; break; }
     }
@@ -176,6 +177,9 @@
   var build = d.getElementById('build'), B = null;
   if(build){
     B = {
+      shot: build.querySelector('.shot'),
+      ui: build.querySelector('.b-ui'),
+      cap: build.querySelector('.landcap'),
       frames: build.querySelector('.frames'),
       imgs: [].slice.call(build.querySelectorAll('.frames img')),
       hero: build.querySelector('.b-hero'),
@@ -218,7 +222,18 @@
     if(!B) return;
     var r = build.getBoundingClientRect();
     var span = build.offsetHeight - w.innerHeight;
-    var p = clamp(-r.top / Math.max(1, span), 0, 1);
+    var P = clamp(-r.top / Math.max(1, span), 0, 1);
+    /* the build plays over the first 87% of the section, then the picture lands into the page */
+    var p = clamp(P / 0.87, 0, 1);
+    var L = clamp((P - 0.885) / 0.1, 0, 1); L = L * L * (3 - 2 * L);
+    B.shot.style.setProperty('--L', L.toFixed(4));
+    B.ui.style.opacity = clamp(1 - L * 2.4, 0, 1).toFixed(3);
+    B.ui.style.visibility = L > 0.45 ? 'hidden' : 'visible';
+    var cu = clamp((L - 0.55) / 0.45, 0, 1);
+    B.cap.style.opacity = cu.toFixed(3);
+    B.cap.style.transform = 'translate3d(0,' + ((1 - cu) * 12).toFixed(1) + 'px,0)';
+    B.cap.classList.toggle('on', cu > 0.6);
+    build.setAttribute('data-nav', L > 0.35 ? 'light' : 'dark');
     var f = B.frameAt(p), base = Math.floor(f), frac = f - base;
     if(base >= 7){ base = 7; frac = 0; }
     for(var k = 0; k < B.imgs.length; k++){
@@ -246,7 +261,7 @@
       B.chs.forEach(function(el){ el.classList.toggle('on', parseInt(el.getAttribute('data-stage'), 10) === c); });
     }
     B.rail.style.transform = 'scaleX(' + p.toFixed(4) + ')';
-    if(B.fab) B.fab.classList.toggle('off', p < 0.985);
+    if(B.fab) B.fab.classList.toggle('off', L < 0.9);
   }
 
   /* ------------------------------------------------------------------
@@ -402,11 +417,77 @@
     });
   }
 
+
+  /* ------------------------------------------------------------------
+     services: a picture rides with the cursor over the list
+     ------------------------------------------------------------------ */
+  var peek = d.querySelector('.svc-peek');
+  if(peek && !reduce && w.matchMedia('(hover: hover) and (pointer: fine)').matches){
+    var pk = [].slice.call(peek.querySelectorAll('img')), rowsEl = [].slice.call(d.querySelectorAll('.svc .row'));
+    var tx = 0, ty = 0, cx = 0, cy = 0, pRaf = null, fresh = true;
+    var pLoop = function(){
+      cx += (tx - cx) * 0.17; cy += (ty - cy) * 0.17;
+      peek.style.transform = 'translate3d(' + cx.toFixed(1) + 'px,' + cy.toFixed(1) + 'px,0) translate(-50%,-55%) rotate(' + clamp((tx - cx) * 0.04, -6, 6).toFixed(2) + 'deg)';
+      pRaf = (Math.abs(tx - cx) > 0.4 || Math.abs(ty - cy) > 0.4) ? requestAnimationFrame(pLoop) : null;
+    };
+    rowsEl.forEach(function(row, i){
+      row.addEventListener('mouseenter', function(e){
+        if(fresh){ cx = tx = e.clientX; cy = ty = e.clientY; fresh = false; }
+        pk.forEach(function(im, j){ im.classList.toggle('on', j === i); });
+        peek.classList.add('on');
+      });
+      row.addEventListener('mouseleave', function(e){
+        var to = e.relatedTarget;
+        if(!to || !to.closest || !to.closest('.svc .row')){ peek.classList.remove('on'); fresh = true; }
+      });
+      row.addEventListener('mousemove', function(e){ tx = e.clientX; ty = e.clientY; if(!pRaf) pRaf = requestAnimationFrame(pLoop); });
+    });
+    w.addEventListener('scroll', function(){ if(peek.classList.contains('on')){ peek.classList.remove('on'); fresh = true; } }, {passive:true});
+  }
+
+  /* ------------------------------------------------------------------
+     reviews: one at a time, every seven seconds, paused on hover
+     ------------------------------------------------------------------ */
+  d.querySelectorAll('.tst').forEach(function(box){
+    var items = [].slice.call(box.querySelectorAll('.tq')), dots = [].slice.call(box.querySelectorAll('.td button')), bar = box.querySelector('.tbar i');
+    var n = 0, DUR = 7000, el = 0, last = 0, held = false, seen = false;
+    function show(k){
+      n = (k + items.length) % items.length; el = 0;
+      items.forEach(function(it, j){ it.classList.toggle('on', j === n); });
+      dots.forEach(function(b, j){ b.setAttribute('aria-current', j === n ? 'true' : 'false'); });
+    }
+    dots.forEach(function(b, j){ b.addEventListener('click', function(){ show(j); }); });
+    box.addEventListener('mouseenter', function(){ held = true; });
+    box.addEventListener('mouseleave', function(){ held = false; });
+    box.addEventListener('focusin', function(){ held = true; });
+    box.addEventListener('focusout', function(){ held = false; });
+    if('IntersectionObserver' in w){ new IntersectionObserver(function(es){ seen = es[0].isIntersecting; }, {threshold:.3}).observe(box); }
+    if(reduce) return;
+    function tick(now){
+      var dt = last ? Math.min(100, now - last) : 0; last = now;
+      if(seen && !held){ el += dt; if(el >= DUR) show(n + 1); }
+      if(bar) bar.style.transform = 'scaleX(' + (el / DUR).toFixed(4) + ')';
+      requestAnimationFrame(tick);
+    }
+    requestAnimationFrame(tick);
+  });
+
+  /* ------------------------------------------------------------------
+     summer: days until the first of June, and which summer we book for
+     ------------------------------------------------------------------ */
+  (function(){
+    var now = new Date(), y = now.getFullYear();
+    var june = new Date(y, 5, 1); if(now >= june) june = new Date(y + 1, 5, 1);
+    var days = Math.ceil((june - now) / 864e5);
+    var dEl = d.getElementById('days'); if(dEl) dEl.textContent = days;
+    d.querySelectorAll('.sy').forEach(function(s){ s.textContent = june.getFullYear(); });
+  })();
+
   /* ------------------------------------------------------------------
      filming: A starts and stops a steady auto-scroll, R jumps to the top,
      the arrows make the run shorter or longer
      ------------------------------------------------------------------ */
-  var auto = false, aRaf = null, aT0 = 0, aFrom = 0, aSpan = 0, SECS = build ? 34 : 24;
+  var auto = false, aRaf = null, aT0 = 0, aFrom = 0, aSpan = 0, SECS = build ? 40 : 24;
   function aLoop(ts){
     if(!auto) return;
     if(!aT0) aT0 = ts;

@@ -515,6 +515,7 @@
       lb.querySelector('[data-k="wk"]').textContent = p.wk + ' שבועות';
       lb.querySelector('[data-k="fin"]').textContent = p.fin;
       lb.querySelector('.lb-n').textContent = ('0' + (lbCur + 2)) + ' / 07';
+      var lt = lb.querySelector('.lb-tour'); if(lt) lt.hidden = p.key !== 'galil';
       lb.querySelector('.lb-go').href = 'contact.html?type=' + encodeURIComponent('בריכה חדשה') + '&calc=' + encodeURIComponent('בהשראת הפרויקט: ' + p.t + ' (' + p.type + ', ' + p.size + ')');
       try{ history.replaceState(null, '', '#' + p.key); }catch(e){}
     };
@@ -555,6 +556,84 @@
     if(h){ PJ.forEach(function(p, i){ if(p.key === h) setTimeout(function(){ lbOpen(i); }, 500); }); }
   }
 
+
+  /* ------------------------------------------------------------------
+     360 TOUR: scroll turns the drone around the pool, a drag adds to it.
+     One all-keyframe video (every frame seekable); a tall version for
+     desktop, a square crop for phones. Loaded only near the section.
+     ------------------------------------------------------------------ */
+  var tour = d.getElementById('tour'), T = null;
+  if(tour){
+    T = {
+      v: tour.querySelector('.tour-v'), stage: tour.querySelector('.tour-stage'),
+      fg: tour.querySelector('.t-fg'), tick: tour.querySelector('.t-tick'), deg: tour.querySelector('.t-deg'), dial: tour.querySelector('.tour-dial'),
+      bar: tour.querySelector('.tour-load i'), dur: 0, ready: false, started: false, drag: 0, cur: -1, want: 0
+    };
+    T.load = function(){
+      if(T.started) return; T.started = true;
+      var tall = w.matchMedia('(max-aspect-ratio: 4/5)').matches;
+      T.v.src = tour.getAttribute(tall ? 'data-m' : 'data-d');
+      T.v.preload = 'auto';
+      try{ T.v.load(); }catch(e){}
+    };
+    var grab = function(){ if(!T.dur && isFinite(T.v.duration) && T.v.duration > 0) T.dur = T.v.duration; };
+    var onReady = function(){
+      if(T.ready) return; grab(); if(!T.dur) return;
+      T.ready = true; tour.classList.add('live');
+      T.cur = -1; tourTick();
+    };
+    T.v.addEventListener('loadedmetadata', grab);
+    T.v.addEventListener('durationchange', grab);
+    T.v.addEventListener('loadeddata', onReady);
+    T.v.addEventListener('canplay', onReady);
+    T.v.addEventListener('progress', function(){
+      try{ if(T.dur && T.v.buffered.length){ T.bar.style.transform = 'scaleX(' + Math.min(1, T.v.buffered.end(T.v.buffered.length - 1) / T.dur) + ')'; if(T.v.buffered.end(T.v.buffered.length - 1) >= T.dur - 0.05) tour.classList.add('ready'); } }catch(e){}
+    });
+    T.v.addEventListener('seeked', function(){ if(Math.abs(T.want - T.v.currentTime) > 0.02) T.seek(T.want); });
+    T.seek = function(t){
+      T.want = t;
+      if(T.v.seeking) return;
+      try{ T.v.currentTime = t; }catch(e){}
+    };
+    /* drag to turn */
+    var dragging = false, x0 = 0, y0 = 0, d0 = 0, axis = '';
+    T.stage.addEventListener('pointerdown', function(e){ if(e.target.closest('a')) return; dragging = true; axis = ''; x0 = e.clientX; y0 = e.clientY; d0 = T.drag; });
+    w.addEventListener('pointermove', function(e){
+      if(!dragging) return;
+      var dx = e.clientX - x0, dy = e.clientY - y0;
+      if(!axis){ if(Math.abs(dx) > 6 || Math.abs(dy) > 6) axis = Math.abs(dx) > Math.abs(dy) ? 'x' : 'y'; else return; }
+      if(axis !== 'x') return;
+      T.stage.classList.add('drag');
+      T.drag = d0 - dx * 0.32; tourTick();
+    });
+    var endDrag = function(){ dragging = false; T.stage.classList.remove('drag'); };
+    w.addEventListener('pointerup', endDrag); w.addEventListener('pointercancel', endDrag);
+    T.dial.addEventListener('keydown', function(e){
+      if(e.key === 'ArrowLeft'){ T.drag += 10; tourTick(); e.preventDefault(); }
+      if(e.key === 'ArrowRight'){ T.drag -= 10; tourTick(); e.preventDefault(); }
+    });
+    if('IntersectionObserver' in w){
+      new IntersectionObserver(function(es){ if(es[0].isIntersecting) T.load(); }, {rootMargin:'150% 0px'}).observe(tour);
+    } else { T.load(); }
+  }
+  function tourTick(){
+    if(!T) return;
+    var r = tour.getBoundingClientRect(), span = tour.offsetHeight - w.innerHeight;
+    if(r.bottom < -w.innerHeight || r.top > w.innerHeight * 2) return;
+    var p = clamp(-r.top / Math.max(1, span), 0, 1);
+    var ang = ((p * 360 + T.drag) % 360 + 360) % 360;
+    var shown = Math.round(ang) % 360;
+    T.deg.textContent = shown;
+    T.dial.setAttribute('aria-valuenow', shown);
+    T.fg.style.strokeDashoffset = (339.3 * (1 - ang / 360)).toFixed(1);
+    T.tick.style.transform = 'rotate(' + ang.toFixed(1) + 'deg)';
+    if(T.ready && T.dur){
+      var frames = Math.round(T.dur * 30), f = Math.round(ang / 360 * frames) % frames;
+      if(f !== T.cur){ T.cur = f; T.seek((f + 0.5) / 30); }
+    }
+  }
+
+
   /* ------------------------------------------------------------------
      filming: A starts and stops a steady auto-scroll, R jumps to the top,
      the arrows make the run shorter or longer
@@ -586,7 +665,7 @@
      one scroll loop for everything that follows the scroll
      ------------------------------------------------------------------ */
   var pending = false;
-  function frame(){ pending = false; buildTick(); navTheme(); sayTick(); parTick(); }
+  function frame(){ pending = false; buildTick(); navTheme(); sayTick(); parTick(); tourTick(); }
   function onScroll(){ if(!pending){ pending = true; requestAnimationFrame(frame); } }
   w.addEventListener('scroll', onScroll, {passive:true});
   w.addEventListener('resize', onScroll);
